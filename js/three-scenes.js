@@ -125,7 +125,7 @@
       const wide = w > 900;
       group.position.x = 0;                      // the crystal IS the space backdrop - dead center
       group.position.y = 0;
-      group.scale.setScalar(wide ? 1.18 : 0.84);
+      group.scale.setScalar(wide ? 1.18 : Math.min(0.84, camera.aspect * 1.3));   // tall phones: keep the whole crystal on screen
     };
     fit();
     addEventListener("resize", fit);
@@ -199,6 +199,7 @@
       shatterStart = clock.getElapsedTime();
     };
     window.__restoreCrystal = () => {
+      if (hint) hint.style.opacity = "";                     // tap tag comes back with the crystal
       broken = false; shatterStart = -3; group.visible = true; canvas.style.opacity = 1;
     };
     window.__fitCrystal = fit;

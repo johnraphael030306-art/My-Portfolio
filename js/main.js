@@ -115,6 +115,23 @@
   }
   edgeSync(0);
 
+  /* ------- touch: swipe left / right between pages ------- */
+  let sw = null;
+  addEventListener("touchstart", e => {
+    sw = null;
+    if (e.touches.length !== 1 || current === "home" || document.body.classList.contains("popup-open")) return;
+    if (e.target.closest(".carousel, input, textarea, .facetnav")) return;   // the ring has its own drag
+    const t = e.touches[0]; sw = { x: t.clientX, y: t.clientY, t: performance.now() };
+  }, { passive: true });
+  addEventListener("touchend", e => {
+    if (!sw) return;
+    const t = e.changedTouches[0], dx = t.clientX - sw.x, dy = t.clientY - sw.y, dt = performance.now() - sw.t;
+    sw = null;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8 && dt < 1000) step(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  const dragHint = $("#dragHint");
+  if (dragHint && matchMedia("(hover:none)").matches) dragHint.textContent = "◈ TAP TO ENTER";
+
   /* ------- ENTER the command deck (crystal shatter) ------- */
   window.__enterDeck = () => {
     if (window.__deckEntered) return;                         // one shatter per visit-home
